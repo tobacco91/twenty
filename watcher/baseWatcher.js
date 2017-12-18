@@ -9,19 +9,23 @@ export class BaseWatcher {
     static ComponentWatcher = 4;
 	static ComponentName = 'component';
 	static ManagerSign = 'each';
-	constructor(element, nowData, modelId, nowId = 0) {
+	constructor(element, nowData, modelId, nowId = 0, styleDisplay = 'block') {
 		this.element = element;
 		this.nowData = nowData;
 		this.modelId = modelId;
 		this.nowId = nowId;
-		this.nodeInfo = this.getNodeInfo();
+		this.styleDisplay = styleDisplay;
 		this.nowWatcher = this.getWatcher();
 		this.nowType = this.getType();
+		this.domInformation = this.getDomInformation();
 	}
-	getNodeInfo() {
+	getDomInformation() {
 		return {
-			dataset : toArray(this.element.dataset)
+			dataset : this.element.dataset
 		}
+	}
+	setModel() {
+		
 	}
 	getType() {
 		const NODE_TYPE = this.element.nodeType;
@@ -30,11 +34,14 @@ export class BaseWatcher {
 			return BaseWatcher.TextWatcher;
 		} else if(NODE_NAME === Component.nodeName) {
 			return BaseWatcher.ComponentWatcher;
-		}else if(this.nodeInfo.dataset.hasOwnProperty(BaseWatcher.ManagerSign)) {
+		}else if(this.domInformation.dataset.hasOwnProperty(BaseWatcher.ManagerSign)) {
 			return BaseWatcher.ManagerWatcher;
 		} else {
 			return BaseWatcher.ElementWatcher;
 		}
+	}
+	execInstructions(statement,data = this.nowData) {
+		return (new Function('data', `with(data) { return ${statement};}`))(data);
 	}
 	getWatcher() {
 		let watcher = null;
