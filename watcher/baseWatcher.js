@@ -1,4 +1,5 @@
 import { toArray } from '../utilityFunc/untilityFunc.js'
+import { set } from '../model/model.js'
 import ElementWatcher from './elementWatcher.js';
 import ManageWatcher from './manageWatcher.js';
 import TextWatcher from './textWatcher.js';
@@ -18,6 +19,10 @@ export class BaseWatcher {
 		this.nowWatcher = this.getWatcher();
 		this.nowType = this.getType();
 		this.domInformation = this.getDomInformation();
+		this.setModel();
+	}
+	render() {
+		this.nowWatcher.render();
 	}
 	getDomInformation() {
 		return {
@@ -25,7 +30,9 @@ export class BaseWatcher {
 		}
 	}
 	setModel() {
-		
+		this.nowWatcher.model.forEach(function(item) {
+			set(modelId, item, this)
+		});
 	}
 	getType() {
 		const NODE_TYPE = this.element.nodeType;

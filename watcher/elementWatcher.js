@@ -1,4 +1,5 @@
 import { toArray } from '../utilityFunc/untilityFunc.js'
+import modelParse from '../model/modelParse.js';
 export default class ElementWatcher {
     static instructions = {
         if: this.handleIf,
@@ -11,11 +12,13 @@ export default class ElementWatcher {
         this.styleDisplay = '';
         this.nextRenderInfo = true;
         this.resolvedInstructions = {}
+        this.model = '';
     }
     render() {
         let execResolved;
         for(let i  in ElementWatcher.instructions) {
             if(this.base.domInformation.dataset.hasOwnProperty(i)) {
+                this.model = modelParse(this.base.domInformation.dataset[i]);
                 execResolved = this.base.execInstructions(this.base.domInformation.dataset[i]);
                 this.resolvedInstructions[i] = execResolved;
                 ElementWatcher.instructions[i](execResolved);
