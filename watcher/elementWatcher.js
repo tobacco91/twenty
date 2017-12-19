@@ -1,18 +1,19 @@
 import { toArray } from '../utilityFunc/untilityFunc.js'
 import modelParse from '../model/modelParse.js';
 export default class ElementWatcher {
-    static instructions = {
-        if: this.handleIf,
-        else: this.handleElse,
-        ifElse: this.handleIfElse
+    static instructionsHandle = {
+        'data-if': this.handleIf,
+        'data-else': this.handleElse,
+        'data-if-else': this.handleIfElse
     }
-    //['if', 'else', 'elseIf'];
+    static instructions = ['data-if','data-else','data-if-else'];
     constructor(base) {
         this.base = base;
         this.styleDisplay = '';
         this.nextRenderInfo = true;
-        this.resolvedInstructions = {}
-        this.model = '';
+        this.instructionsList = this.getDataset();
+        this.resolvedInstructions = {};
+        this.model = this.getModel();
     }
     render() {
         let execResolved;
@@ -30,6 +31,21 @@ export default class ElementWatcher {
         toArray(this.base.element.childNodes).forEach(function(element) {
             new BaseWatcher(element,)
         });
+    }
+    getDataset() {
+        return this.base.filterAttr(this.instructionsList, true)
+                .map((item) => {
+                    this.base.removeAttr(item.name);
+                    return {name: item.name, value: item.value}
+                 })
+    }
+    setNowId() {
+        this.base.setAttr('data-now-id', this.base.nowId)
+    }
+    getModel() {
+        this.instructionsList.forEach((item) => {
+            modelParse(item.value);
+        })
     }
     handleIf(value) {
         if(value) {

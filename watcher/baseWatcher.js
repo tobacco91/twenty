@@ -20,19 +20,31 @@ export class BaseWatcher {
 		this.nowType = this.getType();
 		this.domInformation = this.getDomInformation();
 		this.setModel();
+		this.render();
 	}
 	render() {
 		this.nowWatcher.render();
 	}
 	getDomInformation() {
 		return {
-			dataset : this.element.dataset
+			dataset : this.element.dataset,
+			attr : this.element.attributes ? toArray(this.element.attributes) : []
 		}
 	}
 	setModel() {
-		this.nowWatcher.model.forEach(function(item) {
-			set(modelId, item, this)
-		});
+		const model = this.nowWatcher.model;
+		if(model) {
+			model.forEach(function(item) {
+				set(modelId, item, this)
+			});
+		}
+		
+	}
+	removeAttr(name) {
+		this.element.removeAttribute(name)
+	}
+	setAttr(name,value) {
+		this.element.setAttribute(name,value)
 	}
 	getType() {
 		const NODE_TYPE = this.element.nodeType;
@@ -49,6 +61,12 @@ export class BaseWatcher {
 	}
 	execInstructions(statement,data = this.nowData) {
 		return (new Function('data', `with(data) { return ${statement};}`))(data);
+	}
+	filterAttr(list = [], type = true) {
+		this.domInformation.attr.filter((item) => {
+			return type ? list.indexOf(item.name) > -1 : list.indexOf(item.name) === -1;
+		})
+		
 	}
 	getWatcher() {
 		let watcher = null;
