@@ -10,9 +10,10 @@ export class BaseWatcher {
     static ComponentWatcher = 4;
 	static ComponentName = 'component';
 	static ManagerSign = 'each';
-	constructor(element, nowData, modelId, nowId = 0, styleDisplay = 'block') {
+	constructor(element, nowData, previous = null, modelId, nowId = 0, styleDisplay = 'block') {
 		this.element = element;
 		this.nowData = nowData;
+		this.previous = previous;
 		this.modelId = modelId;
 		this.nowId = nowId;
 		this.styleDisplay = styleDisplay;

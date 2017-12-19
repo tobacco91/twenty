@@ -1,5 +1,6 @@
 import { toArray } from '../utilityFunc/untilityFunc.js'
 import modelParse from '../model/modelParse.js';
+import BaseWatcher from './baseWatcher.js'
 export default class ElementWatcher {
     static instructionsHandle = {
         'data-if': this.handleIf,
@@ -9,22 +10,14 @@ export default class ElementWatcher {
     static instructions = ['data-if','data-else','data-if-else'];
     constructor(base) {
         this.base = base;
-        this.styleDisplay = '';
+        this.renderInf = null;
         this.nextRenderInfo = true;
         this.instructionsList = this.getDataset();
-        this.resolvedInstructions = {};
         this.model = this.getModel();
     }
     render() {
-        let execResolved;
-        for(let i  in ElementWatcher.instructions) {
-            if(this.base.domInformation.dataset.hasOwnProperty(i)) {
-                this.model = modelParse(this.base.domInformation.dataset[i]);
-                execResolved = this.base.execInstructions(this.base.domInformation.dataset[i]);
-                this.resolvedInstructions[i] = execResolved;
-                ElementWatcher.instructions[i](execResolved);
-            }
-        } 
+        let instructionslist;
+        this[ElementWatcher.instructionsHandle[this.instructionsList.name]](this.instructionsList.resolve);
         this.childWatcher();
     }
     childWatcher() {
@@ -33,11 +26,11 @@ export default class ElementWatcher {
         });
     }
     getDataset() {
-        return this.base.filterAttr(this.instructionsList, true)
+        return this.base.filterAttr(ElementWatcher.instructions, true)
                 .map((item) => {
                     this.base.removeAttr(item.name);
-                    return {name: item.name, value: item.value}
-                 })
+                    return {name: item.name, value: item.value, resolve: this.base.execInstructions(item.value)}
+                 })[0]
     }
     setNowId() {
         this.base.setAttr('data-now-id', this.base.nowId)
@@ -48,13 +41,12 @@ export default class ElementWatcher {
         })
     }
     handleIf(value) {
-        if(value) {
-            this.nextRenderInfo = false;
-        }
         if(!value) {
-            this.base.element.style.display = 'none';
+            this.shouldRender = false;
         }
-        delete this.base.element.dataset.value;
+    }
+    handleElse(value) {
+        this.base.previous
     }
 
 }
