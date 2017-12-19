@@ -10,13 +10,14 @@ export class BaseWatcher {
     static ComponentWatcher = 4;
 	static ComponentName = 'component';
 	static ManagerSign = 'each';
-	constructor(element, nowData, previous = null, modelId, nowId = 0, styleDisplay = 'block') {
+	//元素 数据 上一个元素watcher 本组件的随机数 本元素的排序数 所属组件 父元素Watcher
+	constructor(element, nowData, previous = null, modelId, nowId = 0, component = null, parent = null) {
 		this.element = element;
 		this.nowData = nowData;
 		this.previous = previous;
 		this.modelId = modelId;
 		this.nowId = nowId;
-		this.styleDisplay = styleDisplay;
+		//this.styleDisplay = styleDisplay;
 		this.nowWatcher = this.getWatcher();
 		this.nowType = this.getType();
 		this.domInformation = this.getDomInformation();
@@ -47,6 +48,9 @@ export class BaseWatcher {
 	setAttr(name,value) {
 		this.element.setAttribute(name,value)
 	}
+	getNowId(i) {
+		return `${this.nowId}.${i}`
+	}
 	getType() {
 		const NODE_TYPE = this.element.nodeType;
 		const NODE_NAME = this.element.nodeName.toLowCase();
@@ -61,7 +65,8 @@ export class BaseWatcher {
 		}
 	}
 	execInstructions(statement,data = this.nowData) {
-		return (new Function('data', `with(data) { return ${statement};}`))(data);
+		return this.nowData[statement];
+		//(new Function('data', `with(data) { return ${statement};}`))(data);
 	}
 	filterAttr(list = [], type = true) {
 		this.domInformation.attr.filter((item) => {

@@ -10,19 +10,37 @@ export default class ElementWatcher {
     static instructions = ['data-if','data-else','data-if-else'];
     constructor(base) {
         this.base = base;
-        this.renderInf = null;
         this.nextRenderInfo = true;
-        this.instructionsList = this.getDataset();
-        this.model = this.getModel();
+        this.instructionsList = this.getDataset();//{name:data-if,value:a>b,reslove:false}
+        this.model = this.getModel();//获取 a>b 中的a b
+        this.renderInf = this.getRenderInfo(); //是否渲染
+        childWatcherList = [];
+        this.setNowId();
     }
     render() {
-        let instructionslist;
-        this[ElementWatcher.instructionsHandle[this.instructionsList.name]](this.instructionsList.resolve);
-        this.childWatcher();
+        if(this.renderInf.renderInstructions) {
+            this[ElementWatcher.instructionsHandle[this.instructionsList.name]](this.instructionsList.resolve);
+            if(!this.renderInf.renderShould) {
+                this.base.element.style.display = 'none';
+            } else {
+                this.childWatcher();
+            }
+        } else {
+            this.childWatcher();
+        }
+        
     }
     childWatcher() {
-        toArray(this.base.element.childNodes).forEach(function(element) {
-            new BaseWatcher(element,)
+        let previousWatcher = null;
+        this.childWatcherList = toArray(this.base.element.childNodes).map(function(element,index) {
+            const childWatcher = new BaseWatcher(
+            element
+            ,this.base.nowData
+            ,previousWatcher
+            ,this.base.modelId
+            ,this.base.getNowId(index))
+            previousWatcher = childWatcher;
+            return childWatcher;
         });
     }
     getDataset() {
@@ -31,6 +49,16 @@ export default class ElementWatcher {
                     this.base.removeAttr(item.name);
                     return {name: item.name, value: item.value, resolve: this.base.execInstructions(item.value)}
                  })[0]
+    }
+    getRenderInfo() {
+        let renderInstructions = true;
+        if(this.instructionsList === undefined) {
+            renderInstructions = false
+        }
+        return {
+            renderInstructions : renderInstructions,
+            renderShould: true
+        }
     }
     setNowId() {
         this.base.setAttr('data-now-id', this.base.nowId)
@@ -42,11 +70,25 @@ export default class ElementWatcher {
     }
     handleIf(value) {
         if(!value) {
-            this.shouldRender = false;
+            this.renderInf.renderShould = false;
         }
     }
     handleElse(value) {
-        this.base.previous
+        let previousWatcher = this.base.previous;
+        while(previousWatcher) {
+            if(previousWatcher.nowType === BaseWatcher.ElementWatcher) {
+                if(previousWatcher.domInformation.dataset.hasOwnProperty('if')) {
+                    break;
+                }else if(previousWatcher.domInformation.dataset.hasOwnProperty('elseIf') && previousWatcher.nowWatcher.instructionsList.resolve) {
+                    break
+                }
+            }
+            previousWatcher = previousWatcher.previous;
+        }
+        //如果之前有ELSEif或者if为true 则这个else节点不渲染
+        if(previousWatcher.nowWatcher.instructionsList.resolve) {
+            this.renderInf.renderShould = false;
+        }
     }
 
 }
