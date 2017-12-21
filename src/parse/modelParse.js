@@ -2,7 +2,7 @@ const VAR = /[a-zA-Z_0-9]+/g;
 const VAR_INNERHTML = /(?:\s*{{\s*)([a-zA-Z_0-9]+)(?:\s*}}\s*)/g;
 export function modelParse(str) {
     let res = str.match(VAR);
-    console.log(res)
+    //console.log(res)
     return res;
 }
 export function innerHTMLParse(str) {

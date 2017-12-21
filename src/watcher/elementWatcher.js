@@ -66,10 +66,9 @@ export default class ElementWatcher {
         this.base.setAttr('data-now-id', this.base.nowId)
     }
     getModel() {
+        //console.log(this.instructionsList)
         if(this.instructionsList) {
-            this.instructionsList.forEach((item) => {
-                modelParse(item.value);
-            })
+            modelParse(this.instructionsList.value);
         } 
     }
     handleIf(value) {
