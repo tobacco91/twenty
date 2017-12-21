@@ -1,11 +1,11 @@
-import { toArray } from '../utilityFunc/untilityFunc.js'
-import modelParse from '../model/modelParse.js';
+import { toArray } from '../utilityFunc/utilityFunc.js'
+import { modelParse } from '../parse/modelParse.js';
 import BaseWatcher from './baseWatcher.js'
 export default class ElementWatcher {
     static instructionsHandle = {
-        'data-if': this.handleIf,
-        'data-else': this.handleElse,
-        'data-if-else': this.handleIfElse
+        'data-if': 'handleIf',
+        'data-else': 'handleElse',
+        'data-if-else': 'handleIfElse'
     }
     static instructions = ['data-if','data-else','data-if-else'];
     constructor(base) {
@@ -14,7 +14,7 @@ export default class ElementWatcher {
         this.instructionsList = this.getDataset();//{name:data-if,value:a>b,reslove:false}
         this.model = this.getModel();//获取 a>b 中的a b
         this.renderInf = this.getRenderInfo(); //是否渲染
-        childWatcherList = [];
+        this.childWatcherList = [];
         this.setNowId();
     }
     render() {
@@ -32,7 +32,8 @@ export default class ElementWatcher {
     }
     childWatcher() {
         let previousWatcher = null;
-        this.childWatcherList = toArray(this.base.element.childNodes).map(function(element,index) {
+        console.log(this.BaseWatcher)
+        this.childWatcherList = toArray(this.base.element.childNodes).map((element,index) => {
             const childWatcher = new BaseWatcher(
             element
             ,this.base.nowData
@@ -44,6 +45,7 @@ export default class ElementWatcher {
         });
     }
     getDataset() {
+        // console.log(1,this.base.filterAttr(ElementWatcher.instructions, true))
         return this.base.filterAttr(ElementWatcher.instructions, true)
                 .map((item) => {
                     this.base.removeAttr(item.name);
@@ -64,9 +66,11 @@ export default class ElementWatcher {
         this.base.setAttr('data-now-id', this.base.nowId)
     }
     getModel() {
-        this.instructionsList.forEach((item) => {
-            modelParse(item.value);
-        })
+        if(this.instructionsList) {
+            this.instructionsList.forEach((item) => {
+                modelParse(item.value);
+            })
+        } 
     }
     handleIf(value) {
         if(!value) {

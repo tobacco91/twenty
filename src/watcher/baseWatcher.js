@@ -1,13 +1,13 @@
-import { toArray } from '../utilityFunc/untilityFunc.js'
+import { toArray } from '../utilityFunc/utilityFunc.js'
 import { set } from '../model/model.js'
 import ElementWatcher from './elementWatcher.js';
 import ManageWatcher from './manageWatcher.js';
 import TextWatcher from './textWatcher.js';
-export class BaseWatcher {
-    static ManagerWatcher = 1;
-    static ElementWatcher = 2;
-    static TextWatcher = 3;
-    static ComponentWatcher = 4;
+export default class BaseWatcher {
+    static ManagerWatcherType = 1;
+    static ElementWatcherType = 2;
+    static TextWatcherType = 3;
+    static ComponentWatcherType = 4;
 	static ComponentName = 'component';
 	static ManagerSign = 'each';
 	//元素 数据 上一个元素watcher 本组件的随机数 本元素的排序数 所属组件 父元素Watcher
@@ -17,10 +17,9 @@ export class BaseWatcher {
 		this.previous = previous;
 		this.modelId = modelId;
 		this.nowId = nowId;
-		//this.styleDisplay = styleDisplay;
+        this.domInformation = this.getDomInformation();
+	    this.nowType = this.getType();
 		this.nowWatcher = this.getWatcher();
-		this.nowType = this.getType();
-		this.domInformation = this.getDomInformation();
 		this.setModel();
 		this.render();
 	}
@@ -34,9 +33,10 @@ export class BaseWatcher {
 		}
 	}
 	setModel() {
-		const model = this.nowWatcher.model;
+        
+		let model = this.nowWatcher.model;
 		if(model) {
-			model.forEach(function(item) {
+			model.forEach((item) => {
 				set(modelId, item, this)
 			});
 		}
@@ -53,15 +53,17 @@ export class BaseWatcher {
 	}
 	getType() {
 		const NODE_TYPE = this.element.nodeType;
-		const NODE_NAME = this.element.nodeName.toLowCase();
+		const NODE_NAME = this.element.nodeName.toLowerCase();
 		if(this.element.nodeType === 3) {
-			return BaseWatcher.TextWatcher;
-		} else if(NODE_NAME === Component.nodeName) {
-			return BaseWatcher.ComponentWatcher;
-		}else if(this.domInformation.dataset.hasOwnProperty(BaseWatcher.ManagerSign)) {
-			return BaseWatcher.ManagerWatcher;
+			return BaseWatcher.TextWatcherType;
+		}
+        //  else if(NODE_NAME === Component.nodeName) {
+		// 	return BaseWatcher.ComponentWatcherType;
+		// }
+        else if(this.domInformation.dataset.hasOwnProperty(BaseWatcher.ManagerSign)) {
+			return BaseWatcher.ManagerWatcherType;
 		} else {
-			return BaseWatcher.ElementWatcher;
+			return BaseWatcher.ElementWatcherType;
 		}
 	}
 	execInstructions(statement,data = this.nowData) {
@@ -69,7 +71,7 @@ export class BaseWatcher {
 		//(new Function('data', `with(data) { return ${statement};}`))(data);
 	}
 	filterAttr(list = [], type = true) {
-		this.domInformation.attr.filter((item) => {
+		return this.domInformation.attr.filter((item) => {
 			return type ? list.indexOf(item.name) > -1 : list.indexOf(item.name) === -1;
 		})
 		
@@ -77,17 +79,20 @@ export class BaseWatcher {
 	getWatcher() {
 		let watcher = null;
 		switch(this.nowType) {
-			case BaseWatcher.ElementWatcher: 
+			case BaseWatcher.ElementWatcherType: 
 				watcher = ElementWatcher;
 				break;
-			case BaseWatcher.TextWatcher: 
+			case BaseWatcher.TextWatcherType: 
 				watcher = TextWatcher;
 				break;
-			case BaseWatcher.ManagerWatcher: 
+			case BaseWatcher.ManagerWatcherType: 
 				watcher = ManageWatcher;
 				break;
+           default: 
+           //console.log(this.element,this.nowType)
+                throw new TypeError('type Type errors,can only be Element/text/Manager/component')
 		}
-		new watcher(this)
+		return new watcher(this)
 	}
 
 }

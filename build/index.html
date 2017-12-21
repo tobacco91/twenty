@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <div id="twenty">
+        <h1 data-if="a > b">
+            {a} > {b}
+        </h1>
+        <h1 data-else>
+            {a} <{b}
+        </h1>
+    </div>
+    <script src="http://localhost:8080/webpack-dev-server.js"></script>
+    <script src="./index.js"></script>
+    <script>
+        Twenty.watch(document.querySelector('#twenty'),{
+            a:1,
+            b:2
+        })
+    </script>
+</body>
+</html>
