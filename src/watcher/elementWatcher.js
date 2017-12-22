@@ -1,5 +1,6 @@
+import {EVENT_TYPE } from '../event/event.js';
 import { toArray } from '../utilityFunc/utilityFunc.js'
-import { modelParse } from '../parse/modelParse.js';
+import { modelParse, innerHTMLParse } from '../parse/modelParse.js';
 import BaseWatcher from './baseWatcher.js'
 export default class ElementWatcher {
     static instructionsHandle = {
@@ -15,6 +16,7 @@ export default class ElementWatcher {
         this.model = this.getModel();//获取 a>b 中的a b
         this.renderInf = this.getRenderInfo(); //是否渲染
         this.childWatcherList = [];
+        this.events = this.getEvents();//{name:onclick,value:mesg(e)}
         this.setNowId();
     }
     render() {
@@ -68,6 +70,12 @@ export default class ElementWatcher {
         if(this.instructionsList) {
             modelParse(this.instructionsList.value);
         } 
+    }
+    getEvents() {
+        return this.base.filterAttr(ECENT_TYPE)
+        .map(item => {
+            return innerHTMLParse(item)
+        })
     }
     handleIf(value) {
         if(!value) {
