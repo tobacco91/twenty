@@ -32,7 +32,7 @@ export default class ElementWatcher {
     }
     childWatcher() {
         let previousWatcher = null;
-        console.log(this.BaseWatcher)
+        //console.log(this.BaseWatcher)
         this.childWatcherList = toArray(this.base.element.childNodes).map((element,index) => {
             const childWatcher = new BaseWatcher(
             element
@@ -45,7 +45,6 @@ export default class ElementWatcher {
         });
     }
     getDataset() {
-        // console.log(1,this.base.filterAttr(ElementWatcher.instructions, true))
         return this.base.filterAttr(ElementWatcher.instructions, true)
                 .map((item) => {
                     this.base.removeAttr(item.name);
@@ -66,7 +65,6 @@ export default class ElementWatcher {
         this.base.setAttr('data-now-id', this.base.nowId)
     }
     getModel() {
-        //console.log(this.instructionsList)
         if(this.instructionsList) {
             modelParse(this.instructionsList.value);
         } 
@@ -89,7 +87,7 @@ export default class ElementWatcher {
             previousWatcher = previousWatcher.previous;
         }
         //如果之前有ELSEif或者if为true 则这个else节点不渲染
-        if(previousWatcher.nowWatcher.instructionsList.resolve) {
+        if(previousWatcher && previousWatcher.nowWatcher.instructionsList.resolve) {
             this.renderInf.renderShould = false;
         }
     }

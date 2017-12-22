@@ -4,24 +4,35 @@ import BaseWatcher from './baseWatcher.js';
 export default class TextWatcher {
     constructor(base) {
         this.base = base;
-        this.viewList = this.getViewList();
+        this.model = this.getModel();
+        this.viewList = this.getViewList();//[{name:a,value:1},{name:>,value:>}]
+        this.viewShow = this.getViewShow();
     }
     render() {
         //非空节点或无变量
-        if(this.viewList.value) {
+        if(this.viewList.length !== 0) {
             //渲染
-            this.base.element.parentNode.innerHTML = this.viewList.value;
+            //console.log(this.base.element.parentNode)
+            this.base.element.parentNode.innerHTML = this.viewShow;
         }
     }
+    getModel() {
+        return innerHTMLParse(this.base.domInformation.textContent.trim());
+    }
     getViewList() {
-        //console.log(this.base,1)
-        let innerVar = innerHTMLParse(this.base.element) || [];
-        return innerVar.map((item) => {
+        return this.model.map((item) => {
             return {
-                name: item,
+                name: item.name,
                 //如果data里不存在这个变量就显示变量本身
-                value: this.base.execInstructions(item)
+                value: item.ifVar ? this.base.execInstructions(item.name) : item.name
             }
         })
+    }
+    getViewShow() {
+        let view = '';
+        this.viewList.forEach((item) => {
+            view += item.value;
+        })
+        return view;
     }
 }

@@ -29,7 +29,8 @@ export default class BaseWatcher {
 	getDomInformation() {
 		return {
 			dataset : this.element.dataset,
-			attr : this.element.attributes ? toArray(this.element.attributes) : []
+			attr : this.element.attributes ? toArray(this.element.attributes) : [],
+            textContent: this.element.textContent
 		}
 	}
 	setModel() {
@@ -37,7 +38,7 @@ export default class BaseWatcher {
 		let model = this.nowWatcher.model;
 		if(model) {
 			model.forEach((item) => {
-				set(modelId, item, this)
+				set(this.modelId, item, this)
 			});
 		}
 		
@@ -67,8 +68,8 @@ export default class BaseWatcher {
 		}
 	}
 	execInstructions(statement,data = this.nowData) {
-		return this.nowData[statement];
-		//(new Function('data', `with(data) { return ${statement};}`))(data);
+		//return this.nowData[statement];
+	    return (new Function('data', `with(data) { return ${statement};}`))(data);
 	}
 	filterAttr(list = [], type = true) {
 		return this.domInformation.attr.filter((item) => {
