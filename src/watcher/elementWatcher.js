@@ -1,4 +1,4 @@
-import {EVENT_TYPE } from '../event/event.js';
+import { EVENT_TYPE,pushEventPool } from '../event/event.js';
 import { toArray } from '../utilityFunc/utilityFunc.js'
 import { modelParse, innerHTMLParse } from '../parse/modelParse.js';
 import BaseWatcher from './baseWatcher.js'
@@ -16,7 +16,8 @@ export default class ElementWatcher {
         this.model = this.getModel();//获取 a>b 中的a b
         this.renderInf = this.getRenderInfo(); //是否渲染
         this.childWatcherList = [];
-        this.events = this.getEvents();//{name:onclick,value:mesg(e)}
+        this.events = this.getEvents();//{type :click,func:mesg(e)}
+        console.log(this.events)
         this.setNowId();
     }
     render() {
@@ -25,9 +26,11 @@ export default class ElementWatcher {
             if(!this.renderInf.renderShould) {
                 this.base.element.style.display = 'none';
             } else {
+                this.bindEvents();
                 this.childWatcher();
             }
         } else {
+            this.bindEvents();
             this.childWatcher();
         }
         
@@ -72,10 +75,18 @@ export default class ElementWatcher {
         } 
     }
     getEvents() {
-        return this.base.filterAttr(ECENT_TYPE)
+        return this.base.filterAttr(EVENT_TYPE)
         .map(item => {
-            return innerHTMLParse(item)
+           this.base.removeAttr(item.name)
+           return {type: item.name, func: innerHTMLParse(item.value)[0].name}
         })
+    }
+    bindEvents() {
+        this.events.forEach((item) => {
+            pushEventPool(this.base.element, item.type, () => {
+                this.base.execInstructions(item.func)
+            })
+        });
     }
     handleIf(value) {
         if(!value) {

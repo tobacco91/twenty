@@ -69,7 +69,7 @@ export default class BaseWatcher {
 	}
 	execInstructions(statement,data = this.nowData) {
 		//return this.nowData[statement];
-	    return (new Function('data', `with(data) { return ${statement};}`))(data);
+        return (new Function('data', `with(data) { return ${statement};}`))(data);
 	}
 	filterAttr(list = [], type = true) {
 		return this.domInformation.attr.filter((item) => {

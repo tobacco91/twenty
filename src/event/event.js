@@ -71,3 +71,8 @@ export const EVENT_TYPE = [
   'abort',
   'blur'
 ]
+
+let eventPool = {}
+export function pushEventPool(element, eventType, eventHandle) {
+    //element.addEventListener()
+}
