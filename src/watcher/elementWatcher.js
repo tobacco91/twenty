@@ -1,6 +1,6 @@
 import { EVENT_TYPE,pushEventPool } from '../event/event.js';
 import { toArray } from '../utilityFunc/utilityFunc.js'
-import { modelParse, innerHTMLParse } from '../parse/modelParse.js';
+import { modelParse } from '../parse/modelParse.js';
 import BaseWatcher from './baseWatcher.js'
 export default class ElementWatcher {
     static instructionsHandle = {
@@ -14,10 +14,11 @@ export default class ElementWatcher {
         this.nextRenderInfo = true;
         this.instructionsList = this.getDataset();//{name:data-if,value:a>b,reslove:false}
         this.model = this.getModel();//获取 a>b 中的a b
+        //console.log(this.instructionsList,this.model,'model')
         this.renderInf = this.getRenderInfo(); //是否渲染
         this.childWatcherList = [];
         this.events = this.getEvents();//{type :click,func:mesg(e)}
-        console.log(this.events)
+        //console.log(this.events)
         this.setNowId();
     }
     render() {
@@ -50,7 +51,7 @@ export default class ElementWatcher {
         });
     }
     getDataset() {
-        return this.base.filterAttr(ElementWatcher.instructions, true)
+        return this.base.filterAttr(ElementWatcher.instructions)
                 .map((item) => {
                     this.base.removeAttr(item.name);
                     return {name: item.name, value: item.value, resolve: this.base.execInstructions(item.value)}
@@ -71,21 +72,20 @@ export default class ElementWatcher {
     }
     getModel() {
         if(this.instructionsList) {
-            modelParse(this.instructionsList.value);
+            return modelParse(this.instructionsList.value);
         } 
     }
     getEvents() {
         return this.base.filterAttr(EVENT_TYPE)
         .map(item => {
            this.base.removeAttr(item.name)
-           return {type: item.name, func: innerHTMLParse(item.value)[0].name}
+           return {type: item.name, func: modelParse(item.value)[0]}
         })
     }
     bindEvents() {
         this.events.forEach((item) => {
-            pushEventPool(this.base.element, item.type, () => {
-                this.base.execInstructions(item.func)
-            })
+            //console.log(this.base.execInstructions(item.func))
+            pushEventPool(this.base.element, item.type, this.base.execInstructions(item.func))
         });
     }
     handleIf(value) {

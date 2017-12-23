@@ -34,11 +34,11 @@ export default class BaseWatcher {
 		}
 	}
 	setModel() {
-        
 		let model = this.nowWatcher.model;
-		if(model) {
+        console.log(model)
+		if(model && model.length !== 0) {
 			model.forEach((item) => {
-				set(this.modelId, item, this)
+				set(this.modelId, item.name ? item.name : item, this)
 			});
 		}
 		

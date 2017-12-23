@@ -5,6 +5,7 @@ export default class TextWatcher {
     constructor(base) {
         this.base = base;
         this.model = this.getModel();
+        //console.log(this.model)
         this.viewList = this.getViewList();//[{name:a,value:1},{name:>,value:>}]
         this.viewShow = this.getViewShow();
     }

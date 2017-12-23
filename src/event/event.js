@@ -74,5 +74,5 @@ export const EVENT_TYPE = [
 
 let eventPool = {}
 export function pushEventPool(element, eventType, eventHandle) {
-    //element.addEventListener()
+    element.addEventListener(eventType.slice(2),eventHandle)
 }
