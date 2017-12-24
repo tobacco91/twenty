@@ -18,11 +18,13 @@
     <script src="http://localhost:8080/webpack-dev-server.js"></script>
     <script src="./index.js"></script>
     <script>
-        Twenty.watch(document.querySelector('#twenty'),{
+        var app = Twenty.watch(document.querySelector('#twenty'),{
             a:1,
             b:2,
-            mesg: function(e) {
-                console.log('mesg',e.target)
+            mesg: (e) => {
+                console.log(app.setState({
+                    a: 3
+                }))
             }
         })
     </script>

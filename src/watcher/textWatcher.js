@@ -5,17 +5,20 @@ export default class TextWatcher {
     constructor(base) {
         this.base = base;
         this.model = this.getModel();
-        //console.log(this.model)
-        this.viewList = this.getViewList();//[{name:a,value:1},{name:>,value:>}]
-        this.viewShow = this.getViewShow();
+        this.viewList = [];//[{name:a,value:1},{name:>,value:>}]
+        this.viewShow = '';
     }
     render() {
+        this.viewList = this.getViewList();
+        this.viewShow = this.getViewShow();
         //非空节点或无变量
         if(this.viewList.length !== 0) {
             //渲染
-            //console.log(this.base.element.parentNode)
-            this.base.element.parentNode.innerHTML = this.viewShow;
+            this.base.domInformation.parentNode.innerHTML = this.viewShow;
         }
+    }
+    reset() {
+        this.render();
     }
     getModel() {
         return innerHTMLParse(this.base.domInformation.textContent.trim());

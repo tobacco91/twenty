@@ -1,5 +1,5 @@
 import { toArray } from '../utilityFunc/utilityFunc.js'
-import { set } from '../model/model.js'
+import { set,get } from '../model/model.js'
 import ElementWatcher from './elementWatcher.js';
 import ManageWatcher from './manageWatcher.js';
 import TextWatcher from './textWatcher.js';
@@ -20,17 +20,45 @@ export default class BaseWatcher {
         this.domInformation = this.getDomInformation();
 	    this.nowType = this.getType();
 		this.nowWatcher = this.getWatcher();
+        this.resetList = [];
+        // this.setState = this.updateRender;
 		this.setModel();
 		this.render();
 	}
 	render() {
 		this.nowWatcher.render();
 	}
+    reset() {
+        this.nowWatcher.render();
+    }
+    updateRender(changeData) {
+        let resetList = []
+        let watcherArr = [];
+        for(let key in changeData) {
+            if(changeData[key] !== this.nowData[key]){
+                //console.log()
+                this.nowData[key] = changeData[key]
+                watcherArr = get(this.modelId, key);
+                resetList = watcherArr ? resetList.concat(get(this.modelId, key)) : resetList;
+            }
+        }
+        return resetList;
+    }
+
+    setState(changeData) {
+        this.resetList = this.updateRender(changeData)
+        if(this.resetList.length !== 0) {
+            this.resetList.forEach(item => {
+                item.reset();
+            })
+        }
+    }
 	getDomInformation() {
 		return {
 			dataset : this.element.dataset,
 			attr : this.element.attributes ? toArray(this.element.attributes) : [],
-            textContent: this.element.textContent
+            textContent: this.element.textContent,
+            parentNode: this.element.parentNode
 		}
 	}
 	setModel() {

@@ -36,6 +36,9 @@ export default class ElementWatcher {
         }
         
     }
+    reset() {
+        this.render();
+    }
     childWatcher() {
         let previousWatcher = null;
         //console.log(this.BaseWatcher)

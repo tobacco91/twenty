@@ -14,3 +14,7 @@ export function set(modelId, key, watcher) {
         model[modelId][key] = [watcher]
     }
 }
+
+export function get(modelId, key) {
+    return model[modelId] && model[modelId][key];
+}
