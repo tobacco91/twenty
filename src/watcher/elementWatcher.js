@@ -11,17 +11,17 @@ export default class ElementWatcher {
     static instructions = ['data-if','data-else','data-if-else'];
     constructor(base) {
         this.base = base;
-        this.nextRenderInfo = true;
+        // this.nextRenderInfo = true;
         this.instructionsList = this.getDataset();//{name:data-if,value:a>b,reslove:false}
         this.model = this.getModel();//获取 a>b 中的a b
-        //console.log(this.instructionsList,this.model,'model')
-        this.renderInf = this.getRenderInfo(); //是否渲染
+        this.renderInf = null; //是否渲染
         this.childWatcherList = [];
-        this.events = this.getEvents();//{type :click,func:mesg(e)}
-        //console.log(this.events)
+        this.events = null;//{type :click,func:mesg(e)}
         this.setNowId();
     }
     render() {
+        this.renderInf = this.getRenderInfo();
+        this.events = this.getEvents();
         if(this.renderInf.renderInstructions) {
             this[ElementWatcher.instructionsHandle[this.instructionsList.name]](this.instructionsList.resolve);
             if(!this.renderInf.renderShould) {
@@ -37,11 +37,12 @@ export default class ElementWatcher {
         
     }
     reset() {
+        this.instructionsList && (this.instructionsList.resolve = this.base.execInstructions(this.instructionsList.value));
         this.render();
     }
     childWatcher() {
         let previousWatcher = null;
-        //console.log(this.BaseWatcher)
+        // console.log(this.BaseWatcher)
         this.childWatcherList = toArray(this.base.element.childNodes).map((element,index) => {
             const childWatcher = new BaseWatcher(
             element

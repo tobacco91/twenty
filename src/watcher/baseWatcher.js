@@ -47,6 +47,7 @@ export default class BaseWatcher {
 
     setState(changeData) {
         this.resetList = this.updateRender(changeData)
+        //console.log(this.resetList)
         if(this.resetList.length !== 0) {
             this.resetList.forEach(item => {
                 item.reset();
@@ -63,7 +64,7 @@ export default class BaseWatcher {
 	}
 	setModel() {
 		let model = this.nowWatcher.model;
-        console.log(model)
+        //console.log(model)
 		if(model && model.length !== 0) {
 			model.forEach((item) => {
 				set(this.modelId, item.name ? item.name : item, this)
