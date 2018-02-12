@@ -1,4 +1,5 @@
 import BaseWatcher from '../watcher/baseWatcher.js';
+import registerComponent from '../component/registerComponent.js';
 import { random } from '../utilityFunc/utilityFunc.js';
 export default {
     watch(element, data) {
@@ -11,5 +12,8 @@ export default {
             null,
             null
         )
+    },
+    registerComponent(key, component) {
+        return registerComponent(key, component)
     }
 }

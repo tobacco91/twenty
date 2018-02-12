@@ -3,6 +3,7 @@ import { set,get } from '../model/model.js'
 import ElementWatcher from './elementWatcher.js';
 import ManageWatcher from './manageWatcher.js';
 import TextWatcher from './textWatcher.js';
+import ComponentWatcher from './componentWatcher.js';
 export default class BaseWatcher {
     static ManagerWatcherType = 1;
     static ElementWatcherType = 2;
@@ -23,7 +24,7 @@ export default class BaseWatcher {
         this.resetList = [];
         // this.setState = this.updateRender;
 		this.setModel();
-		this.render();
+        this.render();
 	}
 	render() {
 		this.nowWatcher.render();
@@ -59,7 +60,8 @@ export default class BaseWatcher {
 			dataset : this.element.dataset,
 			attr : this.element.attributes ? toArray(this.element.attributes) : [],
             textContent: this.element.textContent,
-            parentNode: this.element.parentNode
+            parentNode: this.element.parentNode,
+            nextSibling: this.element.nextSibling
 		}
 	}
 	setModel() {
@@ -86,10 +88,9 @@ export default class BaseWatcher {
 		const NODE_NAME = this.element.nodeName.toLowerCase();
 		if(this.element.nodeType === 3) {
 			return BaseWatcher.TextWatcherType;
+		}else if(NODE_NAME === BaseWatcher.ComponentName) {
+			return BaseWatcher.ComponentWatcherType;
 		}
-        //  else if(NODE_NAME === Component.nodeName) {
-		// 	return BaseWatcher.ComponentWatcherType;
-		// }
         else if(this.domInformation.dataset.hasOwnProperty(BaseWatcher.ManagerSign)) {
 			return BaseWatcher.ManagerWatcherType;
 		} else {
@@ -117,6 +118,9 @@ export default class BaseWatcher {
 				break;
 			case BaseWatcher.ManagerWatcherType: 
 				watcher = ManageWatcher;
+                break;
+            case BaseWatcher.ComponentWatcherType: 
+				watcher = ComponentWatcher;
 				break;
            default: 
            //console.log(this.element,this.nowType)

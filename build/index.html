@@ -8,6 +8,7 @@
 </head>
 <body>
     <div id="twenty">
+        <component data-from="red"></component>
         <h1 data-if="a > b">
             {{a}} > {{b}}
         </h1>
@@ -22,9 +23,18 @@
             a:1,
             b:2,
             mesg: (e) => {
-                console.log(app.setState({
-                    a: 3
-                }))
+                // console.log(app.setState({
+                //     a: 3
+                // }))
+            }
+        })
+        Twenty.registerComponent('red',{
+            templete: `<div>redred</div>`,
+            data: {
+                a: 'red var a'
+            },
+            didMount: function() {
+                console.log(a)
             }
         })
     </script>
