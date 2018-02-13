@@ -7,6 +7,7 @@ export default class ComponentWatcher {
         this.key = base.domInformation.dataset.from;
         this.component = this.getComponent();
         this.templete = this.getTemplete();
+        this.refs = this.getRefs();
     }
     render() {
         typeof this.component.willMount === 'function' && this.component.willMount();
@@ -24,6 +25,11 @@ export default class ComponentWatcher {
         let div = document.createElement('div');
         div.innerHTML = this.component.templete;
         return toArray(div.childNodes);
+    }
+    getRefs() {
+        this.templete.map(e => {
+            if(e.getAttribute)
+        })
     }
     renderComponent() {
         let frg = document.createDocumentFragment();
@@ -46,4 +52,5 @@ export default class ComponentWatcher {
             previousWatcher = childWatcher;
         })
     }
+    
 }
