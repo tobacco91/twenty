@@ -8,7 +8,7 @@
 </head>
 <body>
     <div id="twenty">
-        <component data-from="red"></component>
+        <component data-from="red" abc="juewang" a="acomp"></component>
         <h1 data-if="a > b">
             {{a}} > {{b}}
         </h1>
@@ -28,15 +28,7 @@
                 // }))
             }
         })
-        Twenty.registerComponent('red',{
-            templete: `<div>redred</div>`,
-            data: {
-                a: 'red var a'
-            },
-            didMount: function() {
-                console.log(a)
-            }
-        })
+        
     </script>
 </body>
 </html>
