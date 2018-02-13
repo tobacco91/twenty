@@ -8,10 +8,8 @@ export default class ComponentWatcher {
         this.component = this.getComponent();
         this.templete = this.getTemplete();
         this.props = this.getProps();
-        console.log(this.props)
-        this.refs = this.getRefs();
+        this.refs = this.getRefs(this.templete);
         this.data = this.getData();
-        console.log(this.data)
     }
     render() {
         typeof this.component.willMount === 'function' && this.component.willMount.call(ComponentWatcher.components[this.key]);
@@ -28,6 +26,7 @@ export default class ComponentWatcher {
     getTemplete() {
         let div = document.createElement('div');
         div.innerHTML = this.component.templete;
+        //console.log(div.childNodes[0].childNodes)
         return toArray(div.childNodes);
     }
     getProps() {
@@ -37,12 +36,12 @@ export default class ComponentWatcher {
         })
         return props;
     }
-    getRefs() {
-        this.templete.map(e => {
+    getRefs(DOMArr) {
+        DOMArr.map(e => {
             e.nodeType === 1 
             && e.getAttribute('ref')
-            && (ComponentWatcher.components[this.key]['refs'][e.getAttribute('ref')] = e)
-            
+            && (ComponentWatcher.components[this.key]['refs'][e.getAttribute('ref')] = e);
+            e.childNodes && this.getRefs(toArray(e.childNodes));
         })
     }
     getData() {
@@ -55,6 +54,7 @@ export default class ComponentWatcher {
         this.templete.map(item => {
             frg.appendChild(item);
         })
+        console.log(frg.childNodes[0].childNodes)
         this.base.domInformation.parentNode.removeChild(this.base.element);
         this.base.domInformation.parentNode.insertBefore(frg,this.base.domInformation.nextSibling)
     }
@@ -66,7 +66,8 @@ export default class ComponentWatcher {
                 this.data,
                 previousWatcher,
                 this.component.key,
-                this.base.getNowId(index)
+                this.base.getNowId(index),
+                this.key
             )
             previousWatcher = childWatcher;
         })
