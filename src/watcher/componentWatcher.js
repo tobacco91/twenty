@@ -9,14 +9,10 @@ export default class ComponentWatcher {
         this.templete = this.getTemplete();
     }
     render() {
+        typeof this.component.willMount === 'function' && this.component.willMount();
         this.renderComponent();
         this.renderChildren();
-        console.log(typeof this.component.didMount === 'function')
-        if(this.component.didlMount) {
-            console.log(124)
-            this.component.didMount()
-        }
-        //typeof this.component.didlMount === 'function' && this.component.didMount();
+        typeof this.component.didMount === 'function' && this.component.didMount();
     }
     execStateFunc(func, data = this.component.data) {
         return (new Function('data', `with(data) {${func && func()};}`))(data);
