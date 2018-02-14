@@ -11,8 +11,6 @@ export default class ElementWatcher {
     static instructions = ['data-if','data-else','data-if-else'];
     constructor(base) {
         this.base = base;
-        //console.log(this.base.element)
-        // this.nextRenderInfo = true;
         this.instructionsList = this.getDataset();//{name:data-if,value:a>b,reslove:false}
         this.model = this.getModel();//获取 a>b 中的a b
         this.renderInf = null; //是否渲染
@@ -32,11 +30,6 @@ export default class ElementWatcher {
                 this.childWatcher();
             }
         } else {
-            if(this.base.element.nodeName == 'H2') {
-                console.log(this.renderInf.renderInstructions)
-                console.log(this.base.element)
-                console.log(this.childWatcherList)
-            }
             this.bindEvents();
             this.childWatcher();
         }

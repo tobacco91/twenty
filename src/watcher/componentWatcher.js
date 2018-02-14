@@ -26,7 +26,6 @@ export default class ComponentWatcher {
     getTemplete() {
         let div = document.createElement('div');
         div.innerHTML = this.component.templete;
-        //console.log(div.childNodes[0].childNodes)
         return toArray(div.childNodes);
     }
     getProps() {
@@ -54,7 +53,6 @@ export default class ComponentWatcher {
         this.templete.map(item => {
             frg.appendChild(item);
         })
-        console.log(frg.childNodes[0].childNodes)
         this.base.domInformation.parentNode.removeChild(this.base.element);
         this.base.domInformation.parentNode.insertBefore(frg,this.base.domInformation.nextSibling)
     }
