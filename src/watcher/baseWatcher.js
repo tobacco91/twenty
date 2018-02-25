@@ -1,7 +1,6 @@
 import { toArray } from '../utilityFunc/utilityFunc.js'
 import { set,get } from '../model/model.js'
 import ElementWatcher from './elementWatcher.js';
-import ManageWatcher from './manageWatcher.js';
 import TextWatcher from './textWatcher.js';
 import ComponentWatcher from './componentWatcher.js';
 export default class BaseWatcher {
@@ -116,9 +115,6 @@ export default class BaseWatcher {
 			case BaseWatcher.TextWatcherType: 
 				watcher = TextWatcher;
 				break;
-			case BaseWatcher.ManagerWatcherType: 
-				watcher = ManageWatcher;
-                break;
             case BaseWatcher.ComponentWatcherType: 
 				watcher = ComponentWatcher;
 				break;

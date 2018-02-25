@@ -1,6 +1,6 @@
 import BaseWatcher from '../watcher/baseWatcher.js';
 const model = {};
-console.log(model)
+//console.log(model)
 export function set(modelId, key, watcher) {
     if(!model[modelId]) {
         model[modelId] = {};

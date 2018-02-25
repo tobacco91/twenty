@@ -6,4 +6,5 @@ export default function registerComponent(key, component) {
     component.id = random();
     component.refs = {};
     ComponentWatcher.components[key] = component;
+    //console.log(ComponentWatcher.components)
 }

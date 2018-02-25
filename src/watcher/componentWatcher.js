@@ -17,6 +17,10 @@ export default class ComponentWatcher {
         this.renderChildren();
         typeof this.component.didMount === 'function' && this.component.didMount.call(ComponentWatcher.components[this.key]);
     }
+    reset() {
+        this.renderComponent();
+        this.renderChildren();
+    }
     execStateFunc(func, data = this.component.data) {
         return (new Function('data', `with(data) {${func && func()};}`))(data);
 	}
@@ -25,14 +29,16 @@ export default class ComponentWatcher {
     }
     getTemplete() {
         let div = document.createElement('div');
-        div.innerHTML = this.component.templete;
+        div.innerHTML = this.component.templete();
         return toArray(div.childNodes);
     }
     getProps() {
         let props = {}
-        this.component.props.map(e => {
-            this.base.element.getAttribute(e) && (props[e] = this.base.element.getAttribute(e));
-        })
+        if(this.component.props) {
+            this.component.props.map(e => {
+                this.base.element.getAttribute(e) && (props[e] = this.base.element.getAttribute(e));
+            })
+        }
         return props;
     }
     getRefs(DOMArr) {
@@ -63,7 +69,7 @@ export default class ComponentWatcher {
                 item,
                 this.data,
                 previousWatcher,
-                this.component.key,
+                this.component.id,
                 this.base.getNowId(index),
                 this.key
             )
