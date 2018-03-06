@@ -12,7 +12,7 @@
         <h1 data-if="a > b">
             {{a}} > {{b}}
         </h1>
-        <h1 data-else onclick="{{ mesg(e) }}">
+        <h1 data-else onclick="{{ mesg }}">
             {{a}}c{{b}}
         </h1>
     </div>
@@ -22,10 +22,10 @@
         var app = Twenty.watch(document.querySelector('#twenty'),{
             a:1,
             b:2,
-            mesg: (e) => {
-                // console.log(app.setState({
-                //     a: 3
-                // }))
+            mesg: () => {
+                app.setState({
+                     a: 3
+                })
             }
         })
         
