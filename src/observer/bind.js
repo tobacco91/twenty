@@ -14,6 +14,6 @@ export default {
         )
     },
     registerComponent(key, component) {
-        return registerComponent(key, component)
+        return new registerComponent(key, component)
     }
 }

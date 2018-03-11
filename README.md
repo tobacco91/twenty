@@ -21,15 +21,13 @@
         a:1,
         b:2,
         mesg: () => {
-            app.setState({
-                    a: 3
-            })
+            console.log(123)
         }
     })
 ```
 ```
 组件注册
-Twenty.registerComponent('child',{
+let child = Twenty.registerComponent('child',{
     props: ['trans'],
     templete: function() { return (`<div ref="div">
             <h2 ref="h2">child</h2>
@@ -40,6 +38,9 @@ Twenty.registerComponent('child',{
         abcd: 'abc child'
     },
     didMount: function() {
+        child.setState({
+            abcd: 3
+        })
         console.log(this.data.a,this.refs.h2)
     }
 })
@@ -63,7 +64,7 @@ Twenty.registerComponent('parent',{
 ```
 ```
 state更新
-app.setState({
+componentName.setState({
         a: 3
 })
 ```
