@@ -24,7 +24,7 @@ export default class ComponentWatcher {
     reset(changeData) {
         console.log(changeData,'changedata')
         typeof this.component.willUpdate === 'function' && this.component.willMount.call(ComponentWatcher.components[this.key]);
-        this.componentBaseWatcher.setState(changeData)
+        this.componentBaseWatcher.setProps(changeData)
         typeof this.component.DidUpdate === 'function' && this.component.willMount.call(ComponentWatcher.components[this.key]);
     }
     getModel() {

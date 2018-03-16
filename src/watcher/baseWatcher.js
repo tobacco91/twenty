@@ -68,7 +68,7 @@ export default class BaseWatcher {
         })
         return resetList;
     }
-    setState(changeData) {
+    setProps(changeData) {
         this.keyList = this.getKeyList(changeData)
         console.log(changeData)
         clearTimeout(this.timer);
