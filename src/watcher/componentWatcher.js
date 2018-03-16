@@ -1,5 +1,6 @@
 import BaseWatcher from './baseWatcher.js'
 import { toArray } from '../utilityFunc/utilityFunc.js'
+import { modelParse } from '../parse/modelParse.js';
 export default class ComponentWatcher {
     static components = {}
     constructor(base) {
@@ -10,16 +11,31 @@ export default class ComponentWatcher {
         this.props = this.getProps();
         this.refs = this.getRefs(this.templete);
         this.data = this.getData();
+        this.model = this.getModel();
+        this.componentBaseWatcher;
+        ComponentWatcher.components[this.key].data = this.data;
     }
     render() {
         typeof this.component.willMount === 'function' && this.component.willMount.call(ComponentWatcher.components[this.key]);
         this.renderComponent();
-        this.renderChildren();
+        this.componentBaseWatcher = this.renderChildren()[0];
         typeof this.component.didMount === 'function' && this.component.didMount.call(ComponentWatcher.components[this.key]);
     }
-    reset() {
-        this.renderComponent();
-        this.renderChildren();
+    reset(changeData) {
+        console.log(changeData,'changedata')
+        typeof this.component.willUpdate === 'function' && this.component.willMount.call(ComponentWatcher.components[this.key]);
+        this.componentBaseWatcher.setState(changeData)
+        typeof this.component.DidUpdate === 'function' && this.component.willMount.call(ComponentWatcher.components[this.key]);
+    }
+    getModel() {
+        let model = [];
+        if(this.component.props) {
+            this.component.props.map(e => {
+                let attr = this.base.element.getAttribute(e);
+                attr && (model = modelParse(attr));
+            })
+        }
+        return model;
     }
     execStateFunc(func, data = this.component.data) {
         return (new Function('data', `with(data) {${func && func()};}`))(data);
@@ -36,7 +52,12 @@ export default class ComponentWatcher {
         let props = {}
         if(this.component.props) {
             this.component.props.map(e => {
-                this.base.element.getAttribute(e) && (props[e] = this.base.element.getAttribute(e));
+                let attr = this.base.element.getAttribute(e)
+                if(attr) {
+                    let model = modelParse(attr)[0]
+                    props[e] = this.base.parent.nowData[model];
+                }
+                
             })
         }
         return props;
@@ -64,17 +85,20 @@ export default class ComponentWatcher {
     }
     renderChildren() {
         let previousWatcher = null;
-        this.templete.map((item, index) => {
+        return this.templete.map((item, index) => {
             const childWatcher = new BaseWatcher(
                 item,
                 this.data,
                 previousWatcher,
                 this.component.id,
                 this.base.getNowId(index),
-                this.key
+                this.key,
+                this.base
             )
             previousWatcher = childWatcher;
+            return childWatcher;
         })
+        
     }
     
 }

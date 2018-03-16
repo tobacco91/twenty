@@ -48,7 +48,9 @@ export default class ElementWatcher {
             ,this.base.nowData
             ,previousWatcher
             ,this.base.modelId
-            ,this.base.getNowId(index))
+            ,this.base.getNowId(index)
+            ,this.base.component
+            ,this.base)
             previousWatcher = childWatcher;
             return childWatcher;
         });

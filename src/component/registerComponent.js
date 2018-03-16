@@ -1,44 +1,67 @@
 import ComponentWatcher from '../watcher/componentWatcher.js'
 import checkComponent from './checkComponent.js';
 import { random } from '../utilityFunc/utilityFunc.js'
-import { set,get } from '../model/model.js'
-// export default function registerComponent(key, component) {
-//     checkComponent(key);
-//     component.id = random();
-//     component.refs = {};
-//     ComponentWatcher.components[key] = component;
-//     //console.log(ComponentWatcher.components)
-// }
+import { set,get,model } from '../model/model.js'
+
 export default class RegisterComponent {
     constructor(key, component) {
         checkComponent(key);
-        component.id = random();
+        this.id = random()
+        component.id = this.id;
         component.refs = {};
-        this.component = component;
+        this.key = key;
+        this.keyList = [];
         this.resetList = [];
+        this.timer = null;
         ComponentWatcher.components[key] = component;
     }
-    updateRender(changeData) {
-        let resetList = []
-        let watcherArr = [];
+    // updateRender(changeData) {
+    //     let resetList = []
+    //     let watcherArr = [];
+    //     for(let key in changeData) {
+    //         if(changeData[key] !== ComponentWatcher.components[this.key].data[key]){
+    //             ComponentWatcher.components[this.key].data[key] = changeData[key]
+    //             watcherArr = get(this.id, key);
+    //             resetList = watcherArr ? resetList.concat(get(this.id, key)) : resetList;
+    //         }
+    //     }
+    //     return this.resetList.concat(resetList);
+    // }
+    getKeyList(changeData) {
+        let keyList;
         for(let key in changeData) {
-            if(changeData[key] !== this.component.data[key]){
-                //console.log()
-                this.component.data[key] = changeData[key]
-                watcherArr = get(this.component.id, key);
-                resetList = watcherArr ? resetList.concat(get(this.component.id, key)) : resetList;
+            if(changeData[key] !== ComponentWatcher.components[this.key].data[key]){
+                ComponentWatcher.components[this.key].data[key] = changeData[key]
+                this.keyList.push(key)
             }
         }
+        return this.keyList.concat(keyList);
+    }
+    getRestList(keyList) {
+        let watcherArr = [];
+        let resetList = [];
+        keyList.length && keyList.forEach(key => {
+            watcherArr = get(this.id, key);
+            resetList = watcherArr ? resetList.concat({watcherArr: get(this.id, key),key: key}) : resetList;
+        })
         return resetList;
     }
-
     setState(changeData) {
-        this.resetList = this.updateRender(changeData)
-        //console.log(this.resetList)
-        if(this.resetList.length !== 0) {
-            this.resetList.forEach(item => {
-                item.reset();
-            })
-        }
+        this.keyList = this.getKeyList(changeData)
+        clearTimeout(this.timer);
+        this.timer = setTimeout(() => {
+            this.resetList = this.getRestList(this.keyList)
+            console.log('bbbbb',this.resetList)
+            if(this.resetList.length !== 0) {
+                this.resetList.forEach(item => {
+                    item.watcherArr.forEach(watcher => {
+                        //console.log(item.key)
+                        watcher.reset({[item.key]: ComponentWatcher.components[this.key].data[item.key]});
+                    })
+                    
+                })
+                this.keyList = [];
+            }
+        }, 0);
     }
 }

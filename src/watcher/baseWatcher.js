@@ -16,11 +16,15 @@ export default class BaseWatcher {
 		this.nowData = nowData;
 		this.previous = previous;
 		this.modelId = modelId;
-		this.nowId = nowId;
+        this.nowId = nowId;
+        this.component = component;
+        this.parent = parent;
         this.domInformation = this.getDomInformation();
 	    this.nowType = this.getType();
-		this.nowWatcher = this.getWatcher();
+        this.nowWatcher = this.getWatcher();
+        this.keyList = [];
         this.resetList = [];
+        this.timer = null;
         // this.setState = this.updateRender;
 		this.setModel();
         this.render();
@@ -28,31 +32,66 @@ export default class BaseWatcher {
 	render() {
 		this.nowWatcher.render();
 	}
-    reset() {
-        this.nowWatcher.render();
+    reset(changeData = '') {
+        this.nowWatcher.reset(changeData);
     }
-    updateRender(changeData) {
-        let resetList = []
-        let watcherArr = [];
+    // updateRender(changeData) {
+    //     let resetList = []
+    //     let watcherArr = [];
+    //     for(let key in changeData) {
+    //         if(changeData[key] !== this.nowData[key]){
+    //             // console.log(this.nowData[key], changeData[key], this.component)
+    //             this.nowData[key] = changeData[key]
+    //             watcherArr = get(this.modelId, key);
+    //             //console.log(model[this.modelId],key)
+    //             resetList = watcherArr ? resetList.concat(get(this.modelId, key)) : resetList;
+    //         }
+    //     }
+    //     return resetList;
+    // }
+    getKeyList(changeData) {
+        let keyList = [];
         for(let key in changeData) {
             if(changeData[key] !== this.nowData[key]){
-                //console.log()
                 this.nowData[key] = changeData[key]
-                watcherArr = get(this.modelId, key);
-                resetList = watcherArr ? resetList.concat(get(this.modelId, key)) : resetList;
+                keyList.push(key)
             }
         }
+        return this.keyList.concat(keyList);
+    }
+    getRestList(keyList) {
+        let watcherArr = [];
+        let resetList = [];
+        keyList.length && keyList.forEach(key => {
+            watcherArr = get(this.modelId, key);
+            resetList = watcherArr ? resetList.concat(get(this.modelId, key)) : resetList;
+        })
         return resetList;
     }
-
     setState(changeData) {
-        this.resetList = this.updateRender(changeData)
-        //console.log(this.resetList)
-        if(this.resetList.length !== 0) {
-            this.resetList.forEach(item => {
-                item.reset();
-            })
-        }
+        this.keyList = this.getKeyList(changeData)
+        console.log(changeData)
+        clearTimeout(this.timer);
+        this.timer = setTimeout(() => {
+            this.resetList = this.getRestList(this.keyList)
+            console.log('aaaaa',this.resetList)
+            if(this.resetList.length !== 0) {
+                this.resetList.forEach(item => {
+                    item.reset();
+                })
+                this.keyList = [];
+            }
+        }, 0);
+        // this.resetList = this.updateRender(changeData)
+        // clearTimeout(this.timer)
+        // this.time = setTimeout(() => {
+        //     console.log('aaaaaa')
+        //     if(this.resetList.length !== 0) {
+        //         this.resetList.forEach(item => {
+        //             item.reset();
+        //         })
+        //     }
+        // },0)
     }
 	getDomInformation() {
 		return {
@@ -64,8 +103,7 @@ export default class BaseWatcher {
 		}
 	}
 	setModel() {
-		let model = this.nowWatcher.model;
-        //console.log(model)
+        let model = this.nowWatcher.model;
 		if(model && model.length !== 0) {
 			model.forEach((item) => {
 				set(this.modelId, item.name ? item.name : item, this)
